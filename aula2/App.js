@@ -14,6 +14,7 @@ export default function App() {
         .then( (response) =>{ return response.json()})
         .then((data) => {
                 console.log(data)
+                console.log('dadosCep.length', dadosCep.length)
                 setDadosCep(data);
                
                })
@@ -53,12 +54,21 @@ export default function App() {
       <Text style={{ marginTop: 20 }}>
         CEP: {cep}
       </Text>
-     
-        {
-          dadosCep.lenght === 0 ?(
+      { Object.keys(dadosCep || {}).length === 0 ? (
             <Text>Nenhum dado encontrado</Text>
           ) : (
             <View style={{marginTop: 20}}>
+              <TextInput
+              style={{ height: 40,
+           borderColor: 'gray',
+           borderWidth: 1,
+            width: 200,
+             marginTop: 10 }}
+              label={"CEP"}
+              value={dadosCep.cep}
+              editable={false}
+              />
+              <Divider />
               <TextInput
               style={{ height: 40,
            borderColor: 'gray',
@@ -69,18 +79,40 @@ export default function App() {
               value={dadosCep.logradouro}
               editable={false}
               />
-              <Divider />
-              <Text>CEP: {dadosCep.cep}</Text>
               
               <Divider />
-              <Text>Logradouro: {dadosCep.logradouro}</Text>
+                <TextInput
+              style={{ height: 40,
+           borderColor: 'gray',
+           borderWidth: 1,
+            width: 200,
+             marginTop: 10 }}
+              label={"Bairro"}
+              value={dadosCep.bairro}
+              editable={false}
+              />
               <Divider />
-              <Text>Bairro: {dadosCep.bairro}</Text>
+              <TextInput
+              style={{ height: 40,
+           borderColor: 'gray',
+           borderWidth: 1,
+            width: 200,
+             marginTop: 10 }}
+              label={"Cidade"}
+              value={dadosCep.localidade}
+              editable={false}
+              />
               <Divider />
-              <Text>Cidade: {dadosCep.localidade}</Text>
-              <Divider />
-              <Text>Estado: {dadosCep.uf}</Text>
-              <Divider />
+              <TextInput
+              style={{ height: 40,
+           borderColor: 'gray',
+           borderWidth: 1,
+            width: 200,
+             marginTop: 10 }}
+              label={"Estado"}
+              value={dadosCep.uf}
+              editable={false}
+              />
             </View>
           )
         }
