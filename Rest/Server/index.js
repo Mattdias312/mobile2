@@ -164,6 +164,7 @@ app.delete('/api/alunos/:id', async (req, res) => {
   }
 });
 
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Example app listening on port http://localhost:${port}`)
+  console.log(`Server accessible from network at http://192.168.50.81:${port}`)
 })
