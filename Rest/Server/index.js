@@ -6,6 +6,8 @@ const bodyparser = require('body-parser');
 const cors = require('cors');
 const methodOverride = require('method-override');
 const mongoose = require('mongoose');
+const axios = require('axios');
+const path = require('path');
 const port = 3000;
 // criar um objeto express
 const app = express();
@@ -29,6 +31,9 @@ app.use((req, res, next) => {
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: false }));
 
+// Servir arquivos estáticos
+app.use(express.static(path.join(__dirname, '../public')));
+
 //  fazer a conexão com o banco de dados mongoose
  let  url = "mongodb://localhost:27017/FatecVotorantim";
 
@@ -40,59 +45,123 @@ app.use(bodyparser.urlencoded({ extended: false }));
    () => { console.log("erro na conexão: " ) }
   );
 
-// estrutura da mongodb para armazenar os dados
-var User = mongoose.model('Usuario', { nome: String });
-
-// inserir dados
-
-app.post('/inseir', async(req, res) => {
-    let corpo = req.body.name;
-    //let corpo = "Ricardo";
-    let user = await new User({ nome: corpo });
-    user.save().then(() => console.log('Usuário salvo com sucesso'));
-    res.send({status:'adicionado'});
-    // respostar que tem voltar json
-    res.json({"status": "adicionado com sucesso"});
-})
-
-// deletar dados campo nome
-app.delete('/deletar', async(req, res) => {
-  let corpo = req.body.name;
-  await User.deleteOne({ nome: corpo });
-  res.json({"status": "deletado com sucesso"});
+// Estrutura do modelo Aluno
+const alunoSchema = new mongoose.Schema({
+  matricula: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  nome: {
+    type: String,
+    required: true
+  },
+  endereco: {
+    cep: {
+      type: String,
+      required: true
+    },
+    logradouro: String,
+    cidade: String,
+    bairro: String,
+    estado: String,
+    numero: String,
+    complemento: String
+  },
+  cursos: [{
+    type: String
+  }]
+}, {
+  timestamps: true
 });
 
-// DELETA POR ID
-app.delete('/deletar/:id', async(req, res) => {
-  let id = req.params.id;
-  await User.deleteOne({ _id: id });
-  res.json({"status": "deletado com sucesso"});
+const Aluno = mongoose.model('Aluno', alunoSchema);
+
+// Rota para buscar CEP na API ViaCEP
+app.get('/api/cep/:cep', async (req, res) => {
+  try {
+    const { cep } = req.params;
+    const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+    
+    if (response.data.erro) {
+      return res.status(404).json({ error: 'CEP não encontrado' });
+    }
+    
+    res.json(response.data);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar CEP' });
+  }
 });
 
-// ALTERAR DADOS
-
-app.put('/alterar/:id', async(req, res) => {
-  let id = req.params.id;
-  let corpo =   req.body.name;  
-  await User.updateOne({ _id: id }, { nome: corpo });
-  res.json({"status": "alterado com sucesso"});
+// Rota principal - serve a página HTML
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-// Middleware to parse JSON bodies rota
-app.get('/', async (req, res) => {
-   let user = await User.find({});
-   if(user.length > 0){
-     res.json(user);  
-   }else{
-      res.json({"status": "vazio"});
-   } 
-  })
+// API Routes para Alunos
 
-// id
-app.get('/:id', async(req, res) => {
-  let id = req.params.id;
-  let user = await User.findOne({ _id: id });
-  res.json(user);   
+// Listar todos os alunos
+app.get('/api/alunos', async (req, res) => {
+  try {
+    const alunos = await Aluno.find({});
+    res.json(alunos);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar alunos' });
+  }
+});
+
+// Buscar aluno por ID
+app.get('/api/alunos/:id', async (req, res) => {
+  try {
+    const aluno = await Aluno.findById(req.params.id);
+    if (!aluno) {
+      return res.status(404).json({ error: 'Aluno não encontrado' });
+    }
+    res.json(aluno);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar aluno' });
+  }
+});
+
+// Criar novo aluno
+app.post('/api/alunos', async (req, res) => {
+  try {
+    const aluno = new Aluno(req.body);
+    await aluno.save();
+    res.status(201).json({ message: 'Aluno criado com sucesso', aluno });
+  } catch (error) {
+    if (error.code === 11000) {
+      res.status(400).json({ error: 'Matrícula já existe' });
+    } else {
+      res.status(500).json({ error: 'Erro ao criar aluno' });
+    }
+  }
+});
+
+// Atualizar aluno
+app.put('/api/alunos/:id', async (req, res) => {
+  try {
+    const aluno = await Aluno.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!aluno) {
+      return res.status(404).json({ error: 'Aluno não encontrado' });
+    }
+    res.json({ message: 'Aluno atualizado com sucesso', aluno });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao atualizar aluno' });
+  }
+});
+
+// Deletar aluno
+app.delete('/api/alunos/:id', async (req, res) => {
+  try {
+    const aluno = await Aluno.findByIdAndDelete(req.params.id);
+    if (!aluno) {
+      return res.status(404).json({ error: 'Aluno não encontrado' });
+    }
+    res.json({ message: 'Aluno deletado com sucesso' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao deletar aluno' });
+  }
 });
 
 app.listen(port, () => {

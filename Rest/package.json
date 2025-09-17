@@ -1,0 +1,36 @@
+{
+  "name": "sistema-gestao-alunos",
+  "version": "1.0.0",
+  "description": "Sistema de Gestão de Alunos com integração ViaCEP e MongoDB",
+  "main": "Server/index.js",
+  "scripts": {
+    "start": "node Server/index.js",
+    "dev": "nodemon Server/index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "nodejs",
+    "express",
+    "mongodb",
+    "viacep",
+    "rest-api",
+    "alunos",
+    "react-native"
+  ],
+  "author": "Sistema de Gestão",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^7.5.0",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "method-override": "^3.0.0",
+    "axios": "^1.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
