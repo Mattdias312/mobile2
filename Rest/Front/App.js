@@ -227,7 +227,7 @@ export default function App() {
       >
         <Text style={styles.menuButtonText}>➕ Adicionar Aluno</Text>
       </TouchableOpacity>
-
+{/* 
       <TouchableOpacity 
         style={styles.menuButton}
         onPress={() => {
@@ -240,7 +240,7 @@ export default function App() {
         }}
       >
         <Text style={styles.menuButtonText}>🔍 Testar CEP</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 
