@@ -55,5 +55,31 @@ async function ListarUsuario(database: SQLite.SQLiteDatabase) {
         console.log('Erro ao listar o usuario', error);
     }
 }
+
+//-----------------------Deletar------------------------
+async function DeletarUsuario(database: SQLite.SQLiteDatabase, id: number) {
+    //deletar o usuario
+    try {
+        await database.runAsync(`DELETE FROM usuario WHERE id_us = ?`, id);
+        return true;
+    }
+    catch (error) {
+        console.log('Erro ao deletar o usuario', error);
+    }
+}
+
+//-----------------------Atualizar------------------------
+async function AtualizarUsuario(database: SQLite.SQLiteDatabase, id: number, nome: string, email: string) {
+    //atualizar o usuario
+    try {
+        await database.runAsync(`UPDATE usuario SET nome_us = ?, email_us = ? WHERE id_us = ?`,
+             nome, email, id);
+             console.log('Usuario atualizado com sucesso');
+    }
+    catch (error) {
+        console.log('Erro ao atualizar o usuario', error);
+    }
+}
+
 //exportar a função
-export { CriaBanco, CriaTabela, InserirUsuario, ListarUsuario };
+export { CriaBanco, CriaTabela, InserirUsuario, ListarUsuario, DeletarUsuario, AtualizarUsuario };

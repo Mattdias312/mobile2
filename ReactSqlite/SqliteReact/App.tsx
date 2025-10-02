@@ -9,9 +9,14 @@ async function Main() {
   if (db) {
     await CriaTabela(db);
     // await InserirUsuario(db, 'João', 'joao@gmail.com');
+    // const resp await DeletarUsuario(db, 1);
+    // if (response) {
+    //   console.log('Usuario deletado com sucesso');
+    // }
+    // const resp await AtualizarUsuario(db, 1, 'João', 'joao@gmail.com');
     const usuarios = await ListarUsuario(db);
     for (const usuario of usuarios) {
-      console.log('Usuario', usuario);
+      console.log(usuario.id_us, usuario.nome_us, usuario.email_us);
     }
   }
 }
