@@ -98,19 +98,12 @@ export default function Login({ onLogin, onIrParaCadastro, tipoBanco = 'sqlite' 
                 <StatusBar style="light" />
                 <View style={styles.content}>
                     <View style={styles.hero}>
-                        <View style={styles.heroBadge}>
-                            <Ionicons name="shield-checkmark" color={theme.colors.primary} size={18} />
-                            <Text style={styles.heroBadgeText}>Seguro e moderno</Text>
-                        </View>
-                        <Text style={styles.title}>Sistema CRUD</Text>
+                        <Text style={styles.title}>Gerenciador de Produtos</Text>
                         <Text style={styles.subtitle}>Gerencie seus produtos em minutos</Text>
                     </View>
 
                     <View style={styles.form}>
                         <Text style={styles.formTitle}>Faça login</Text>
-                        <Text style={styles.formSubtitle}>
-                            Acesse seu painel personalizado
-                        </Text>
 
                         <View style={styles.inputGroup}>
                             <Text style={styles.label}>Usuário</Text>
@@ -184,23 +177,7 @@ export default function Login({ onLogin, onIrParaCadastro, tipoBanco = 'sqlite' 
                             </Text>
                         </TouchableOpacity>
 
-                        <View style={styles.infoContainer}>
-                            <Text style={styles.infoTitle}>Usuários de teste</Text>
-                            <View style={styles.chips}>
-                                {['admin / admin123', 'user / user123', 'teste / teste123'].map(
-                                    (credencial) => (
-                                        <View key={credencial} style={styles.chip}>
-                                            <Ionicons
-                                                name="checkmark-circle-outline"
-                                                size={16}
-                                                color={theme.colors.secondary}
-                                            />
-                                            <Text style={styles.chipText}>{credencial}</Text>
-                                        </View>
-                                    )
-                                )}
-                            </View>
-                        </View>
+                        
                     </View>
                 </View>
             </KeyboardAvoidingView>
