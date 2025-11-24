@@ -179,9 +179,7 @@ export default function FormularioProduto({
                         <Text style={styles.title}>
                             {isEditando ? 'Editar produto' : 'Novo produto'}
                         </Text>
-                        <Text style={styles.subtitle}>
-                            Complete os campos com as informações essenciais
-                        </Text>
+                        
                     </View>
                     <Ionicons
                         name={isEditando ? 'create-outline' : 'cube-outline'}
