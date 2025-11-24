@@ -12,9 +12,12 @@ import {
     ScrollView,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import * as SQLite from 'expo-sqlite';
 import { CriaBanco, CriaTabela, InserirUsuario, BuscarUsuarioPorNome, BuscarUsuarioPorEmail } from '../Conf/Bd';
 import { InserirUsuario as InserirUsuarioREST, BuscarUsuarioPorNome as BuscarUsuarioPorNomeREST, BuscarUsuarioPorEmail as BuscarUsuarioPorEmailREST } from '../Conf/RestApi';
+import { theme } from '../tema';
 
 interface CadastroProps {
     onCadastrar: (usuario: string, senha: string) => void;
@@ -151,128 +154,157 @@ export default function Cadastro({ onCadastrar, onVoltar, tipoBanco = 'sqlite' }
     };
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-            <StatusBar style="auto" />
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <View style={styles.content}>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>Criar Conta</Text>
-                        <Text style={styles.subtitle}>Cadastre-se para começar</Text>
-                    </View>
-
-                    <View style={styles.form}>
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Usuário *</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={usuario}
-                                onChangeText={setUsuario}
-                                placeholder="Digite seu usuário"
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                editable={!loading}
-                            />
-                            <Text style={styles.hint}>Mínimo de 3 caracteres</Text>
-                        </View>
-
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>E-mail *</Text>
-                            <TextInput
-                                style={styles.input}
-                                value={email}
-                                onChangeText={setEmail}
-                                placeholder="Digite seu e-mail"
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                editable={!loading}
-                            />
-                        </View>
-
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Senha *</Text>
-                            <View style={styles.passwordContainer}>
-                                <TextInput
-                                    style={styles.passwordInput}
-                                    value={senha}
-                                    onChangeText={setSenha}
-                                    placeholder="Digite sua senha"
-                                    secureTextEntry={!mostrarSenha}
-                                    autoCapitalize="none"
-                                    autoCorrect={false}
-                                    editable={!loading}
-                                />
-                                <TouchableOpacity
-                                    style={styles.eyeButton}
-                                    onPress={() => setMostrarSenha(!mostrarSenha)}
-                                >
-                                    <Text style={styles.eyeButtonText}>
-                                        {mostrarSenha ? '👁️' : '👁️‍🗨️'}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Text style={styles.hint}>Mínimo de 6 caracteres</Text>
-                        </View>
-
-                        <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Confirmar Senha *</Text>
-                            <View style={styles.passwordContainer}>
-                                <TextInput
-                                    style={styles.passwordInput}
-                                    value={confirmarSenha}
-                                    onChangeText={setConfirmarSenha}
-                                    placeholder="Confirme sua senha"
-                                    secureTextEntry={!mostrarConfirmarSenha}
-                                    autoCapitalize="none"
-                                    autoCorrect={false}
-                                    editable={!loading}
-                                />
-                                <TouchableOpacity
-                                    style={styles.eyeButton}
-                                    onPress={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
-                                >
-                                    <Text style={styles.eyeButtonText}>
-                                        {mostrarConfirmarSenha ? '👁️' : '👁️‍🗨️'}
-                                    </Text>
-                                </TouchableOpacity>
+        <LinearGradient colors={['#f8f5ff', '#f2fbff']} style={styles.gradient}>
+            <KeyboardAvoidingView
+                style={styles.container}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
+                <StatusBar style="dark" />
+                <ScrollView contentContainerStyle={styles.scrollContent}>
+                    <View style={styles.content}>
+                        <View style={styles.header}>
+                            <Text style={styles.title}>Criar Conta</Text>
+                            <Text style={styles.subtitle}>Comece a controlar seus produtos</Text>
+                            <View style={styles.progress}>
+                                <View style={styles.progressStep}>
+                                    <Ionicons name="person-add" size={18} color="#fff" />
+                                </View>
+                                <View style={styles.progressLine} />
+                                <View style={[styles.progressStep, styles.progressStepMuted]}>
+                                    <Ionicons name="lock-closed" size={18} color={theme.colors.muted} />
+                                </View>
+                                <View style={styles.progressLine} />
+                                <View style={[styles.progressStep, styles.progressStepMuted]}>
+                                    <Ionicons name="checkmark" size={18} color={theme.colors.muted} />
+                                </View>
                             </View>
                         </View>
 
-                        <TouchableOpacity
-                            style={[styles.cadastrarButton, loading && styles.cadastrarButtonDisabled]}
-                            onPress={handleCadastrar}
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <ActivityIndicator color="#fff" />
-                            ) : (
-                                <Text style={styles.cadastrarButtonText}>Cadastrar</Text>
-                            )}
-                        </TouchableOpacity>
+                        <View style={styles.form}>
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.label}>Usuário *</Text>
+                                <View style={styles.inputWrapper}>
+                                    <Ionicons name="person-outline" size={20} color={theme.colors.muted} />
+                                    <TextInput
+                                        style={styles.input}
+                                        value={usuario}
+                                        onChangeText={setUsuario}
+                                        placeholder="Digite seu usuário"
+                                        placeholderTextColor={theme.colors.muted}
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        editable={!loading}
+                                    />
+                                </View>
+                                <Text style={styles.hint}>Mínimo de 3 caracteres</Text>
+                            </View>
 
-                        <TouchableOpacity
-                            style={styles.voltarButton}
-                            onPress={onVoltar}
-                            disabled={loading}
-                        >
-                            <Text style={styles.voltarButtonText}>
-                                Já tem uma conta? Fazer login
-                            </Text>
-                        </TouchableOpacity>
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.label}>E-mail *</Text>
+                                <View style={styles.inputWrapper}>
+                                    <Ionicons name="mail-outline" size={20} color={theme.colors.muted} />
+                                    <TextInput
+                                        style={styles.input}
+                                        value={email}
+                                        onChangeText={setEmail}
+                                        placeholder="nome@empresa.com"
+                                        placeholderTextColor={theme.colors.muted}
+                                        keyboardType="email-address"
+                                        autoCapitalize="none"
+                                        autoCorrect={false}
+                                        editable={!loading}
+                                    />
+                                </View>
+                            </View>
+
+                            <View style={styles.inputRow}>
+                                <View style={[styles.inputGroup, styles.flex]}>
+                                    <Text style={styles.label}>Senha *</Text>
+                                    <View style={styles.inputWrapper}>
+                                        <Ionicons name="lock-closed-outline" size={20} color={theme.colors.muted} />
+                                        <TextInput
+                                            style={styles.input}
+                                            value={senha}
+                                            onChangeText={setSenha}
+                                            placeholder="Digite sua senha"
+                                            placeholderTextColor={theme.colors.muted}
+                                            secureTextEntry={!mostrarSenha}
+                                            autoCapitalize="none"
+                                            editable={!loading}
+                                        />
+                                        <TouchableOpacity onPress={() => setMostrarSenha(!mostrarSenha)}>
+                                            <Ionicons
+                                                name={mostrarSenha ? 'eye-off-outline' : 'eye-outline'}
+                                                size={20}
+                                                color={theme.colors.primary}
+                                            />
+                                        </TouchableOpacity>
+                                    </View>
+                                    <Text style={styles.hint}>Mínimo de 6 caracteres</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.inputGroup}>
+                                <Text style={styles.label}>Confirmar Senha *</Text>
+                                <View style={styles.inputWrapper}>
+                                    <Ionicons name="shield-checkmark-outline" size={20} color={theme.colors.muted} />
+                                    <TextInput
+                                        style={styles.input}
+                                        value={confirmarSenha}
+                                        onChangeText={setConfirmarSenha}
+                                        placeholder="Repita sua senha"
+                                        placeholderTextColor={theme.colors.muted}
+                                        secureTextEntry={!mostrarConfirmarSenha}
+                                        autoCapitalize="none"
+                                        editable={!loading}
+                                    />
+                                    <TouchableOpacity
+                                        onPress={() => setMostrarConfirmarSenha(!mostrarConfirmarSenha)}
+                                    >
+                                        <Ionicons
+                                            name={mostrarConfirmarSenha ? 'eye-off-outline' : 'eye-outline'}
+                                            size={20}
+                                            color={theme.colors.primary}
+                                        />
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+
+                            <TouchableOpacity
+                                style={[styles.cadastrarButton, loading && styles.cadastrarButtonDisabled]}
+                                onPress={handleCadastrar}
+                                disabled={loading}
+                            >
+                                {loading ? (
+                                    <ActivityIndicator color="#fff" />
+                                ) : (
+                                    <Text style={styles.cadastrarButtonText}>Criar conta</Text>
+                                )}
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                style={styles.voltarButton}
+                                onPress={onVoltar}
+                                disabled={loading}
+                            >
+                                <Text style={styles.voltarButtonText}>
+                                    Já tem uma conta? <Text style={styles.voltarButtonHighlight}>Fazer login</Text>
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                </ScrollView>
+            </KeyboardAvoidingView>
+        </LinearGradient>
     );
 }
 
 const styles = StyleSheet.create({
+    gradient: {
+        flex: 1,
+    },
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
     },
     scrollContent: {
         flexGrow: 1,
@@ -280,96 +312,109 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         justifyContent: 'center',
-        padding: 20,
+        padding: theme.spacing.lg,
     },
     header: {
         alignItems: 'center',
-        marginBottom: 30,
+        marginBottom: theme.spacing.lg,
     },
     title: {
         fontSize: 32,
         fontWeight: 'bold',
-        color: '#007AFF',
-        marginBottom: 10,
+        color: theme.colors.text,
     },
     subtitle: {
         fontSize: 16,
-        color: '#666',
+        color: theme.colors.muted,
+        marginTop: 6,
+    },
+    progress: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: theme.spacing.md,
+    },
+    progressStep: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: theme.colors.primary,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    progressStepMuted: {
+        backgroundColor: '#E7E7FB',
+    },
+    progressLine: {
+        flex: 1,
+        height: 2,
+        backgroundColor: '#E4E6F6',
     },
     form: {
-        backgroundColor: '#fff',
-        padding: 20,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.radius.lg,
+        padding: theme.spacing.lg,
+        ...theme.shadow.card,
+        gap: theme.spacing.md,
     },
     inputGroup: {
-        marginBottom: 20,
+        gap: theme.spacing.xs,
+    },
+    inputRow: {
+        flexDirection: 'row',
+        gap: theme.spacing.sm,
+    },
+    flex: {
+        flex: 1,
     },
     label: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
+        fontSize: 14,
+        fontWeight: '700',
+        color: theme.colors.text,
     },
-    input: {
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        padding: 12,
-        fontSize: 16,
-        backgroundColor: '#f9f9f9',
-    },
-    passwordContainer: {
+    inputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
         borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        backgroundColor: '#f9f9f9',
+        borderColor: theme.colors.border,
+        borderRadius: theme.radius.md,
+        paddingHorizontal: theme.spacing.sm,
+        backgroundColor: '#F9FAFF',
+        gap: theme.spacing.sm,
     },
-    passwordInput: {
+    input: {
         flex: 1,
-        padding: 12,
+        paddingVertical: theme.spacing.sm,
         fontSize: 16,
-    },
-    eyeButton: {
-        padding: 12,
-    },
-    eyeButtonText: {
-        fontSize: 20,
+        color: theme.colors.text,
     },
     hint: {
         fontSize: 12,
-        color: '#999',
-        marginTop: 4,
+        color: theme.colors.muted,
     },
     cadastrarButton: {
-        backgroundColor: '#007AFF',
-        padding: 15,
-        borderRadius: 8,
+        backgroundColor: theme.colors.primary,
+        paddingVertical: theme.spacing.md,
+        borderRadius: theme.radius.md,
         alignItems: 'center',
-        marginTop: 10,
     },
     cadastrarButtonDisabled: {
-        opacity: 0.6,
+        opacity: 0.7,
     },
     cadastrarButtonText: {
         color: '#fff',
         fontSize: 18,
-        fontWeight: 'bold',
+        fontWeight: '700',
     },
     voltarButton: {
-        marginTop: 15,
-        padding: 10,
         alignItems: 'center',
+        marginTop: theme.spacing.sm,
     },
     voltarButtonText: {
-        color: '#007AFF',
-        fontSize: 14,
+        color: theme.colors.muted,
+    },
+    voltarButtonHighlight: {
+        color: theme.colors.primary,
+        fontWeight: '700',
     },
 });
 

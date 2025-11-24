@@ -9,6 +9,7 @@ import {
     Alert,
     ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import * as SQLite from 'expo-sqlite';
 import {
     InserirProduto as InserirSQLite,
@@ -18,6 +19,7 @@ import {
     InserirProduto as InserirREST,
     AtualizarProduto as AtualizarREST,
 } from '../Conf/RestApi';
+import { theme } from '../tema';
 
 interface Produto {
     id?: number | string;
@@ -170,54 +172,88 @@ export default function FormularioProduto({
     };
 
     return (
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
             <View style={styles.form}>
-                <Text style={styles.title}>
-                    {isEditando ? 'Editar Produto' : 'Novo Produto'}
-                </Text>
-
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Nome *</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={nome}
-                        onChangeText={setNome}
-                        placeholder="Digite o nome do produto"
+                <View style={styles.titleRow}>
+                    <View>
+                        <Text style={styles.title}>
+                            {isEditando ? 'Editar produto' : 'Novo produto'}
+                        </Text>
+                        <Text style={styles.subtitle}>
+                            Complete os campos com as informações essenciais
+                        </Text>
+                    </View>
+                    <Ionicons
+                        name={isEditando ? 'create-outline' : 'cube-outline'}
+                        size={28}
+                        color={theme.colors.primary}
                     />
                 </View>
 
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Descrição</Text>
-                    <TextInput
-                        style={[styles.input, styles.textArea]}
-                        value={descricao}
-                        onChangeText={setDescricao}
-                        placeholder="Digite a descrição do produto"
-                        multiline
-                        numberOfLines={4}
-                    />
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Informações básicas</Text>
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Nome *</Text>
+                        <View style={styles.inputWrapper}>
+                            <Ionicons name="text-outline" size={18} color={theme.colors.muted} />
+                            <TextInput
+                                style={styles.input}
+                                value={nome}
+                                onChangeText={setNome}
+                                placeholder="Digite o nome do produto"
+                                placeholderTextColor={theme.colors.muted}
+                            />
+                        </View>
+                    </View>
+
+                    <View style={styles.inputGroup}>
+                        <Text style={styles.label}>Descrição</Text>
+                        <View style={[styles.inputWrapper, styles.textArea]}>
+                            <TextInput
+                                style={[styles.input, styles.inputMultiline]}
+                                value={descricao}
+                                onChangeText={setDescricao}
+                                placeholder="Conte um pouco sobre o produto"
+                                placeholderTextColor={theme.colors.muted}
+                                multiline
+                                numberOfLines={4}
+                            />
+                        </View>
+                    </View>
                 </View>
 
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Preço *</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={preco}
-                        onChangeText={setPreco}
-                        placeholder="0.00"
-                        keyboardType="decimal-pad"
-                    />
-                </View>
-
-                <View style={styles.inputGroup}>
-                    <Text style={styles.label}>Quantidade *</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={quantidade}
-                        onChangeText={setQuantidade}
-                        placeholder="0"
-                        keyboardType="numeric"
-                    />
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Estoque e preço</Text>
+                    <View style={styles.row}>
+                        <View style={[styles.inputGroup, styles.flex]}>
+                            <Text style={styles.label}>Preço *</Text>
+                            <View style={styles.inputWrapper}>
+                                <Ionicons name="cash-outline" size={18} color={theme.colors.muted} />
+                                <TextInput
+                                    style={styles.input}
+                                    value={preco}
+                                    onChangeText={setPreco}
+                                    placeholder="0.00"
+                                    placeholderTextColor={theme.colors.muted}
+                                    keyboardType="decimal-pad"
+                                />
+                            </View>
+                        </View>
+                        <View style={[styles.inputGroup, styles.flex]}>
+                            <Text style={styles.label}>Quantidade *</Text>
+                            <View style={styles.inputWrapper}>
+                                <Ionicons name="layers-outline" size={18} color={theme.colors.muted} />
+                                <TextInput
+                                    style={styles.input}
+                                    value={quantidade}
+                                    onChangeText={setQuantidade}
+                                    placeholder="0"
+                                    placeholderTextColor={theme.colors.muted}
+                                    keyboardType="numeric"
+                                />
+                            </View>
+                        </View>
+                    </View>
                 </View>
 
                 <View style={styles.buttonGroup}>
@@ -226,7 +262,7 @@ export default function FormularioProduto({
                         onPress={onCancelar}
                         disabled={loading}
                     >
-                        <Text style={styles.buttonText}>Cancelar</Text>
+                        <Text style={styles.cancelText}>Cancelar</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
@@ -237,7 +273,10 @@ export default function FormularioProduto({
                         {loading ? (
                             <ActivityIndicator color="#fff" />
                         ) : (
-                            <Text style={styles.buttonText}>Salvar</Text>
+                            <View style={styles.saveContent}>
+                                <Ionicons name="save-outline" size={18} color="#fff" />
+                                <Text style={styles.buttonText}>Salvar</Text>
+                            </View>
                         )}
                     </TouchableOpacity>
                 </View>
@@ -249,60 +288,111 @@ export default function FormularioProduto({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: theme.colors.background,
+    },
+    scroll: {
+        padding: theme.spacing.lg,
+        paddingBottom: 120,
     },
     form: {
-        padding: 20,
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.radius.lg,
+        padding: theme.spacing.lg,
+        ...theme.shadow.card,
+        gap: theme.spacing.lg,
+    },
+    titleRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 20,
+        color: theme.colors.text,
+    },
+    subtitle: {
+        color: theme.colors.muted,
+        marginTop: 6,
+    },
+    section: {
+        gap: theme.spacing.md,
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: '700',
+        color: theme.colors.text,
     },
     inputGroup: {
-        marginBottom: 20,
+        gap: theme.spacing.xs,
+    },
+    row: {
+        flexDirection: 'row',
+        gap: theme.spacing.sm,
+    },
+    flex: {
+        flex: 1,
     },
     label: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
+        color: theme.colors.text,
+    },
+    inputWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        borderRadius: theme.radius.md,
+        paddingHorizontal: theme.spacing.sm,
+        backgroundColor: '#F9FAFF',
+        gap: theme.spacing.sm,
     },
     input: {
-        backgroundColor: '#fff',
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 8,
-        padding: 12,
+        flex: 1,
+        paddingVertical: theme.spacing.sm,
         fontSize: 16,
+        color: theme.colors.text,
     },
-    textArea: {
+    inputMultiline: {
         height: 100,
         textAlignVertical: 'top',
+    },
+    textArea: {
+        alignItems: 'flex-start',
+        paddingTop: theme.spacing.sm,
     },
     buttonGroup: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        marginTop: 20,
+        gap: theme.spacing.sm,
     },
     button: {
         flex: 1,
-        padding: 15,
-        borderRadius: 8,
+        paddingVertical: theme.spacing.md,
+        borderRadius: theme.radius.md,
         alignItems: 'center',
-        marginHorizontal: 5,
+        justifyContent: 'center',
     },
     cancelButton: {
-        backgroundColor: '#8E8E93',
+        backgroundColor: 'rgba(0,0,0,0.05)',
     },
     saveButton: {
-        backgroundColor: '#007AFF',
+        backgroundColor: theme.colors.primary,
     },
     buttonText: {
         color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
+        marginLeft: 6,
+    },
+    saveContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    cancelText: {
+        color: theme.colors.text,
+        fontWeight: '600',
     },
 });
 

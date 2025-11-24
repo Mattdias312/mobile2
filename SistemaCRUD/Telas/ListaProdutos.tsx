@@ -8,6 +8,8 @@ import {
     Alert,
     ActivityIndicator,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import * as SQLite from 'expo-sqlite';
 import {
     CriaBanco,
@@ -19,6 +21,7 @@ import {
     ListarProdutos as ListarREST,
     DeletarProduto as DeletarREST,
 } from '../Conf/RestApi';
+import { theme } from '../tema';
 
 interface Produto {
     id?: number | string;
@@ -112,78 +115,94 @@ export default function ListaProdutos({
         return `R$ ${preco.toFixed(2).replace('.', ',')}`;
     };
 
-    if (loading) {
-        return (
-            <View style={styles.centerContainer}>
-                <ActivityIndicator size="large" color="#007AFF" />
-                <Text style={styles.loadingText}>Carregando produtos...</Text>
-            </View>
-        );
-    }
-
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.headerLeft}>
-                    <Text style={styles.title}>Produtos</Text>
-                    {usuarioLogado && (
-                        <Text style={styles.usuarioText}>Olá, {usuarioLogado}</Text>
-                    )}
-                </View>
-                <View style={styles.headerRight}>
-                    <TouchableOpacity style={styles.addButton} onPress={onAdicionar}>
-                        <Text style={styles.addButtonText}>+ Adicionar</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.logoffButton} onPress={onLogoff}>
-                        <Text style={styles.logoffButtonText}>Sair</Text>
+            <LinearGradient colors={['#4B68FF', '#7C83FD']} style={styles.hero}>
+                <View style={styles.headerContent}>
+                    <View>
+                        <Text style={styles.heroTitle}>Seus produtos</Text>
+                        <Text style={styles.heroSubtitle}>
+                            {usuarioLogado ? `Bem-vindo, ${usuarioLogado}` : 'Mantenha tudo organizado'}
+                        </Text>
+                    </View>
+                    <TouchableOpacity style={styles.logoffBadge} onPress={onLogoff}>
+                        <Ionicons name="log-out-outline" size={20} color="#fff" />
                     </TouchableOpacity>
                 </View>
+                <View style={styles.heroFooter}>
+                    <Text style={styles.heroFooterText}>
+                        {produtos.length} {produtos.length === 1 ? 'item' : 'itens'} cadastrados
+                    </Text>
+                </View>
+            </LinearGradient>
+
+            <View style={styles.listWrapper}>
+                {loading ? (
+                    <View style={styles.centerContainer}>
+                        <ActivityIndicator size="large" color={theme.colors.primary} />
+                        <Text style={styles.loadingText}>Carregando produtos...</Text>
+                    </View>
+                ) : produtos.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <Ionicons name="cube-outline" size={56} color={theme.colors.muted} />
+                        <Text style={styles.emptyText}>Nenhum produto cadastrado</Text>
+                        <TouchableOpacity style={styles.emptyButton} onPress={onAdicionar}>
+                            <Text style={styles.emptyButtonText}>Adicionar primeiro produto</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    <FlatList
+                        data={produtos}
+                        contentContainerStyle={styles.listContent}
+                        keyExtractor={(item) => (item._id || item.id || Math.random()).toString()}
+                        renderItem={({ item }) => (
+                            <View style={styles.produtoCard}>
+                                <View style={styles.cardHeader}>
+                                    <View>
+                                        <Text style={styles.produtoNome}>{item.nome}</Text>
+                                        <Text style={styles.produtoDescricao}>
+                                            {item.descricao || 'Sem descrição'}
+                                        </Text>
+                                    </View>
+                                    <View style={styles.badge}>
+                                        <Ionicons name="pricetag-outline" size={14} color="#fff" />
+                                        <Text style={styles.badgeText}>{formatarPreco(item.preco)}</Text>
+                                    </View>
+                                </View>
+                                <View style={styles.cardFooter}>
+                                    <Text style={styles.produtoQuantidade}>
+                                        {item.quantidade} unidades
+                                    </Text>
+                                    <View style={styles.produtoActions}>
+                                        <TouchableOpacity
+                                            style={[styles.actionButton, styles.viewButton]}
+                                            onPress={() => onVisualizar(item)}
+                                        >
+                                            <Ionicons name="eye-outline" size={18} color="#34C759" />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.actionButton, styles.editButton]}
+                                            onPress={() => onEditar(item)}
+                                        >
+                                            <Ionicons name="create-outline" size={18} color="#FF9500" />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            style={[styles.actionButton, styles.deleteButton]}
+                                            onPress={() => handleDeletar(item)}
+                                        >
+                                            <Ionicons name="trash-outline" size={18} color="#FF3B30" />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                            </View>
+                        )}
+                    />
+                )}
             </View>
 
-            {produtos.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                    <Text style={styles.emptyText}>Nenhum produto cadastrado</Text>
-                    <TouchableOpacity style={styles.emptyButton} onPress={onAdicionar}>
-                        <Text style={styles.emptyButtonText}>Adicionar Primeiro Produto</Text>
-                    </TouchableOpacity>
-                </View>
-            ) : (
-                <FlatList
-                    data={produtos}
-                    keyExtractor={(item) => (item._id || item.id || Math.random()).toString()}
-                    renderItem={({ item }) => (
-                        <View style={styles.produtoCard}>
-                            <View style={styles.produtoInfo}>
-                                <Text style={styles.produtoNome}>{item.nome}</Text>
-                                <Text style={styles.produtoPreco}>{formatarPreco(item.preco)}</Text>
-                                <Text style={styles.produtoQuantidade}>
-                                    Quantidade: {item.quantidade}
-                                </Text>
-                            </View>
-                            <View style={styles.produtoActions}>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.viewButton]}
-                                    onPress={() => onVisualizar(item)}
-                                >
-                                    <Text style={styles.actionButtonText}>Ver</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.editButton]}
-                                    onPress={() => onEditar(item)}
-                                >
-                                    <Text style={styles.actionButtonText}>Editar</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, styles.deleteButton]}
-                                    onPress={() => handleDeletar(item)}
-                                >
-                                    <Text style={styles.actionButtonText}>Excluir</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
-                />
-            )}
+            <TouchableOpacity style={styles.fab} onPress={onAdicionar}>
+                <Ionicons name="add" size={28} color="#fff" />
+            </TouchableOpacity>
         </View>
     );
 }
@@ -191,7 +210,56 @@ export default function ListaProdutos({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: theme.colors.background,
+    },
+    hero: {
+        paddingTop: 60,
+        paddingHorizontal: theme.spacing.lg,
+        paddingBottom: theme.spacing.lg,
+        borderBottomLeftRadius: 32,
+        borderBottomRightRadius: 32,
+    },
+    headerContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    heroTitle: {
+        fontSize: 28,
+        fontWeight: '800',
+        color: '#fff',
+    },
+    heroSubtitle: {
+        color: 'rgba(255,255,255,0.85)',
+        marginTop: 4,
+    },
+    logoffBadge: {
+        width: 44,
+        height: 44,
+        borderRadius: 16,
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    heroFooter: {
+        marginTop: theme.spacing.lg,
+        backgroundColor: 'rgba(0,0,0,0.15)',
+        paddingVertical: 10,
+        paddingHorizontal: 14,
+        borderRadius: 12,
+        alignSelf: 'flex-start',
+    },
+    heroFooterText: {
+        color: '#fff',
+        fontWeight: '600',
+    },
+    listWrapper: {
+        flex: 1,
+        marginTop: -30,
+        paddingHorizontal: theme.spacing.lg,
+    },
+    listContent: {
+        paddingBottom: 120,
     },
     centerContainer: {
         flex: 1,
@@ -201,53 +269,6 @@ const styles = StyleSheet.create({
     loadingText: {
         marginTop: 10,
         color: '#666',
-    },
-    header: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: 20,
-        backgroundColor: '#fff',
-        borderBottomWidth: 1,
-        borderBottomColor: '#e0e0e0',
-    },
-    headerLeft: {
-        flex: 1,
-    },
-    headerRight: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#333',
-    },
-    usuarioText: {
-        fontSize: 12,
-        color: '#666',
-        marginTop: 4,
-    },
-    addButton: {
-        backgroundColor: '#007AFF',
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        borderRadius: 8,
-    },
-    logoffButton: {
-        backgroundColor: '#FF3B30',
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        borderRadius: 8,
-        marginLeft: 10,
-    },
-    logoffButtonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-    },
-    addButtonText: {
-        color: '#fff',
-        fontWeight: 'bold',
     },
     emptyContainer: {
         flex: 1,
@@ -271,58 +292,84 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     produtoCard: {
-        backgroundColor: '#fff',
-        margin: 10,
-        padding: 15,
-        borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.radius.lg,
+        padding: theme.spacing.md,
+        marginBottom: theme.spacing.md,
+        ...theme.shadow.card,
     },
-    produtoInfo: {
-        marginBottom: 10,
+    cardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        marginBottom: theme.spacing.sm,
+        gap: theme.spacing.sm,
+    },
+    badge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: theme.colors.primary,
+        borderRadius: 999,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        gap: 6,
+    },
+    badgeText: {
+        color: '#fff',
+        fontWeight: '600',
+        fontSize: 13,
     },
     produtoNome: {
         fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 5,
+        fontWeight: '700',
+        color: theme.colors.text,
     },
-    produtoPreco: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#007AFF',
-        marginBottom: 5,
+    produtoDescricao: {
+        color: theme.colors.muted,
+        marginTop: 4,
+    },
+    cardFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: theme.spacing.sm,
     },
     produtoQuantidade: {
         fontSize: 14,
-        color: '#666',
+        color: theme.colors.muted,
     },
     produtoActions: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        marginTop: 10,
+        gap: 12,
     },
     actionButton: {
-        paddingHorizontal: 15,
-        paddingVertical: 8,
-        borderRadius: 6,
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        backgroundColor: 'rgba(103,80,164,0.08)',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     viewButton: {
-        backgroundColor: '#34C759',
+        backgroundColor: 'rgba(52,199,89,0.12)',
     },
     editButton: {
-        backgroundColor: '#FF9500',
+        backgroundColor: 'rgba(255,149,0,0.12)',
     },
     deleteButton: {
-        backgroundColor: '#FF3B30',
+        backgroundColor: 'rgba(255,59,48,0.12)',
     },
-    actionButtonText: {
-        color: '#fff',
-        fontWeight: 'bold',
-        fontSize: 12,
+    fab: {
+        position: 'absolute',
+        right: 24,
+        bottom: 36,
+        width: 64,
+        height: 64,
+        borderRadius: 32,
+        backgroundColor: theme.colors.accent,
+        alignItems: 'center',
+        justifyContent: 'center',
+        ...theme.shadow.card,
     },
 });
 

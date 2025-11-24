@@ -1,5 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { theme } from '../tema';
 
 interface Produto {
     id?: number | string;
@@ -38,54 +40,51 @@ export default function VisualizarProduto({
     };
 
     return (
-        <ScrollView style={styles.container}>
-            <View style={styles.content}>
-                <Text style={styles.title}>Detalhes do Produto</Text>
-
-                <View style={styles.card}>
-                    <Text style={styles.label}>Nome</Text>
-                    <Text style={styles.value}>{produto.nome}</Text>
+        <ScrollView style={styles.container} contentContainerStyle={styles.scroll}>
+            <View style={styles.card}>
+                <View style={styles.header}>
+                    <View>
+                        <Text style={styles.title}>{produto.nome}</Text>
+                        <Text style={styles.subtitle}>
+                            Atualizado em {formatarData(produto.data_criacao || produto.createdAt)}
+                        </Text>
+                    </View>
+                    <View style={styles.pricePill}>
+                        <Ionicons name="cash-outline" size={18} color="#fff" />
+                        <Text style={styles.priceText}>{formatarPreco(produto.preco)}</Text>
+                    </View>
                 </View>
 
-                <View style={styles.card}>
+                <View style={styles.section}>
                     <Text style={styles.label}>Descrição</Text>
                     <Text style={styles.value}>
-                        {produto.descricao || 'Sem descrição'}
+                        {produto.descricao || 'Sem descrição cadastrada.'}
                     </Text>
                 </View>
 
-                <View style={styles.card}>
-                    <Text style={styles.label}>Preço</Text>
-                    <Text style={[styles.value, styles.preco]}>
-                        {formatarPreco(produto.preco)}
-                    </Text>
-                </View>
-
-                <View style={styles.card}>
-                    <Text style={styles.label}>Quantidade</Text>
-                    <Text style={styles.value}>{produto.quantidade} unidades</Text>
-                </View>
-
-                <View style={styles.card}>
-                    <Text style={styles.label}>Data de Criação</Text>
-                    <Text style={styles.value}>
-                        {formatarData(produto.data_criacao || produto.createdAt)}
-                    </Text>
+                <View style={styles.statsRow}>
+                    <View style={styles.statCard}>
+                        <Ionicons name="layers-outline" size={20} color={theme.colors.primary} />
+                        <Text style={styles.statLabel}>Quantidade</Text>
+                        <Text style={styles.statValue}>{produto.quantidade}</Text>
+                    </View>
+                    <View style={styles.statCard}>
+                        <Ionicons name="calendar-outline" size={20} color={theme.colors.primary} />
+                        <Text style={styles.statLabel}>Criado em</Text>
+                        <Text style={styles.statValue}>
+                            {formatarData(produto.data_criacao || produto.createdAt)}
+                        </Text>
+                    </View>
                 </View>
 
                 <View style={styles.buttonGroup}>
-                    <TouchableOpacity
-                        style={[styles.button, styles.voltarButton]}
-                        onPress={onVoltar}
-                    >
-                        <Text style={styles.buttonText}>Voltar</Text>
+                    <TouchableOpacity style={[styles.button, styles.secondary]} onPress={onVoltar}>
+                        <Ionicons name="arrow-back-outline" size={18} color={theme.colors.primary} />
+                        <Text style={styles.secondaryText}>Voltar</Text>
                     </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[styles.button, styles.editarButton]}
-                        onPress={onEditar}
-                    >
-                        <Text style={styles.buttonText}>Editar</Text>
+                    <TouchableOpacity style={[styles.button, styles.primary]} onPress={onEditar}>
+                        <Ionicons name="create-outline" size={18} color="#fff" />
+                        <Text style={styles.primaryText}>Editar</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -96,65 +95,110 @@ export default function VisualizarProduto({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5',
+        backgroundColor: theme.colors.background,
     },
-    content: {
-        padding: 20,
+    scroll: {
+        padding: theme.spacing.lg,
+    },
+    card: {
+        backgroundColor: theme.colors.surface,
+        borderRadius: theme.radius.lg,
+        padding: theme.spacing.lg,
+        ...theme.shadow.card,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 20,
+        color: theme.colors.text,
     },
-    card: {
-        backgroundColor: '#fff',
-        padding: 15,
-        borderRadius: 10,
-        marginBottom: 15,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
+    subtitle: {
+        color: theme.colors.muted,
+        marginTop: 4,
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: theme.spacing.lg,
+        gap: theme.spacing.md,
+    },
+    pricePill: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: theme.colors.primary,
+        paddingHorizontal: theme.spacing.md,
+        paddingVertical: theme.spacing.sm,
+        borderRadius: 999,
+        gap: 6,
+    },
+    priceText: {
+        color: '#fff',
+        fontWeight: '700',
+        fontSize: 16,
+    },
+    section: {
+        marginBottom: theme.spacing.lg,
     },
     label: {
         fontSize: 14,
-        color: '#666',
-        marginBottom: 5,
+        color: theme.colors.muted,
+        marginBottom: 6,
     },
     value: {
         fontSize: 18,
-        color: '#333',
+        color: theme.colors.text,
         fontWeight: '500',
     },
-    preco: {
-        fontSize: 24,
-        color: '#007AFF',
-        fontWeight: 'bold',
+    statsRow: {
+        flexDirection: 'row',
+        gap: theme.spacing.sm,
+    },
+    statCard: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: theme.colors.border,
+        borderRadius: theme.radius.md,
+        padding: theme.spacing.md,
+        gap: 4,
+    },
+    statLabel: {
+        fontSize: 12,
+        color: theme.colors.muted,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    statValue: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: theme.colors.text,
     },
     buttonGroup: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginTop: 20,
+        gap: theme.spacing.sm,
+        marginTop: theme.spacing.lg,
     },
     button: {
         flex: 1,
-        padding: 15,
-        borderRadius: 8,
+        paddingVertical: theme.spacing.md,
+        borderRadius: theme.radius.md,
+        flexDirection: 'row',
+        justifyContent: 'center',
         alignItems: 'center',
-        marginHorizontal: 5,
+        gap: 8,
     },
-    voltarButton: {
-        backgroundColor: '#8E8E93',
+    secondary: {
+        backgroundColor: 'rgba(103,80,164,0.08)',
     },
-    editarButton: {
-        backgroundColor: '#007AFF',
+    primary: {
+        backgroundColor: theme.colors.primary,
     },
-    buttonText: {
+    secondaryText: {
+        color: theme.colors.primary,
+        fontWeight: '700',
+    },
+    primaryText: {
         color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '700',
     },
 });
 
