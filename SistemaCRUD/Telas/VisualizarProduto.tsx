@@ -33,7 +33,11 @@ export default function VisualizarProduto({
         if (!data) return 'Não informado';
         try {
             const date = new Date(data);
-            return date.toLocaleDateString('pt-BR');
+            return new Intl.DateTimeFormat('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: '2-digit',
+            }).format(date);
         } catch {
             return data;
         }
