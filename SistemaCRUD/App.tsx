@@ -83,6 +83,14 @@ export default function App() {
         setTelaAtual('lista');
     };
 
+    const handleAlterarBanco = () => {
+        // Resetar o banco SQLite ao alterar
+        if (tipoBanco === 'sqlite') {
+            setDb(null);
+        }
+        setTelaAtual('selecaoBanco');
+    };
+
     const handleAdicionar = () => {
         setProdutoSelecionado(null);
         setTelaAtual('adicionar');
@@ -162,6 +170,7 @@ export default function App() {
                         onEditar={handleEditar}
                         onVisualizar={handleVisualizar}
                         onLogoff={handleLogoff}
+                        onAlterarBanco={handleAlterarBanco}
                         usuarioLogado={usuarioLogado}
                     />
                 );

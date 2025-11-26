@@ -38,6 +38,7 @@ interface ListaProdutosProps {
     onEditar: (produto: Produto) => void;
     onVisualizar: (produto: Produto) => void;
     onLogoff: () => void;
+    onAlterarBanco: () => void;
     usuarioLogado?: string | null;
 }
 
@@ -47,6 +48,7 @@ export default function ListaProdutos({
     onEditar,
     onVisualizar,
     onLogoff,
+    onAlterarBanco,
     usuarioLogado,
 }: ListaProdutosProps) {
     const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -125,9 +127,14 @@ export default function ListaProdutos({
                             {usuarioLogado ? `Bem-vindo, ${usuarioLogado}` : 'Mantenha tudo organizado'}
                         </Text>
                     </View>
-                    <TouchableOpacity style={styles.logoffBadge} onPress={onLogoff}>
-                        <Ionicons name="log-out-outline" size={20} color="#fff" />
-                    </TouchableOpacity>
+                    <View style={styles.headerActions}>
+                        <TouchableOpacity style={styles.alterarBancoBadge} onPress={onAlterarBanco}>
+                            <Ionicons name="swap-horizontal-outline" size={18} color="#fff" />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.logoffBadge} onPress={onLogoff}>
+                            <Ionicons name="log-out-outline" size={20} color="#fff" />
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={styles.heroFooter}>
                     <Text style={styles.heroFooterText}>
@@ -223,6 +230,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
+    },
+    headerActions: {
+        flexDirection: 'row',
+        gap: theme.spacing.sm,
+    },
+    alterarBancoBadge: {
+        width: 44,
+        height: 44,
+        borderRadius: 16,
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     heroTitle: {
         fontSize: 28,

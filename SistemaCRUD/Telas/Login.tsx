@@ -99,7 +99,6 @@ export default function Login({ onLogin, onIrParaCadastro, tipoBanco = 'sqlite' 
                 <View style={styles.content}>
                     <View style={styles.hero}>
                         <Text style={styles.title}>Gerenciador de Produtos</Text>
-                        <Text style={styles.subtitle}>Gerencie seus produtos em minutos</Text>
                     </View>
 
                     <View style={styles.form}>
